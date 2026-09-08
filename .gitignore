@@ -1,0 +1,34 @@
+# ---- PlatformIO / build output ------------------------------------------
+.pio/
+.pioenvs/
+.piolibdeps/
+*.o
+*.a
+*.d
+*.elf
+*.map
+
+# ---- editors -------------------------------------------------------------
+# keep the recommended-extensions file, ignore everything else in .vscode
+.vscode/*
+!.vscode/extensions.json
+.idea/
+*.swp
+*.bak
+*~
+
+# ---- macOS / Windows -----------------------------------------------------
+.DS_Store
+._*
+.Spotlight-V100
+.Trashes
+Thumbs.db
+desktop.ini
+
+# ---- python scratch ------------------------------------------------------
+__pycache__/
+*.pyc
+
+# NOTE: firmware/*.bin is intentionally NOT ignored - the released Factory
+# Test binaries are meant to be committed.
+# ตั้งใจไม่ ignore firmware/*.bin เพราะไฟล์ .bin ที่ปล่อยให้ผู้ใช้ต้อง commit ขึ้นไปด้วย

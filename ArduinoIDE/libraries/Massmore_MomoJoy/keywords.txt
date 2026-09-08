@@ -1,0 +1,124 @@
+#######################################
+# Syntax coloring for Massmore_MomoJoy
+#######################################
+
+#######################################
+# Datatypes (KEYWORD1)
+#######################################
+MomoJoy	KEYWORD1
+MomoJoyClass	KEYWORD1
+MomoJoyOptions	KEYWORD1
+MomoGamepadState	KEYWORD1
+MomoProfile	KEYWORD1
+MomoButtonMap	KEYWORD1
+MomoHidParser	KEYWORD1
+MomoFoundDevice	KEYWORD1
+MomoMapper	KEYWORD1
+HidField	KEYWORD1
+massmore	KEYWORD1
+
+#######################################
+# Methods and Functions (KEYWORD2)
+#######################################
+begin	KEYWORD2
+end	KEYWORD2
+update	KEYWORD2
+isConnected	KEYWORD2
+isScanning	KEYWORD2
+forgetBonds	KEYWORD2
+disconnect	KEYWORD2
+rescan	KEYWORD2
+scanDevices	KEYWORD2
+foundCount	KEYWORD2
+foundDevice	KEYWORD2
+maxFound	KEYWORD2
+setAddressFilter	KEYWORD2
+setNameFilter	KEYWORD2
+connectToAddress	KEYWORD2
+version	KEYWORD2
+state	KEYWORD2
+pressed	KEYWORD2
+justPressed	KEYWORD2
+justReleased	KEYWORD2
+anyButton	KEYWORD2
+buttons	KEYWORD2
+heldMs	KEYWORD2
+longPressed	KEYWORD2
+lx	KEYWORD2
+ly	KEYWORD2
+rx	KEYWORD2
+ry	KEYWORD2
+l2	KEYWORD2
+r2	KEYWORD2
+lxf	KEYWORD2
+lyf	KEYWORD2
+rxf	KEYWORD2
+ryf	KEYWORD2
+l2f	KEYWORD2
+r2f	KEYWORD2
+mapStick	KEYWORD2
+dpad	KEYWORD2
+dpadUp	KEYWORD2
+dpadDown	KEYWORD2
+dpadLeft	KEYWORD2
+dpadRight	KEYWORD2
+dpadJustChanged	KEYWORD2
+battery	KEYWORD2
+peerName	KEYWORD2
+peerAddress	KEYWORD2
+rssi	KEYWORD2
+packets	KEYWORD2
+reportRateHz	KEYWORD2
+msSinceReport	KEYWORD2
+setDeadzone	KEYWORD2
+deadzone	KEYWORD2
+setProfile	KEYWORD2
+profile	KEYWORD2
+setTriggerThreshold	KEYWORD2
+setInvertLeftY	KEYWORD2
+setInvertRightY	KEYWORD2
+onConnect	KEYWORD2
+onDisconnect	KEYWORD2
+onRawReport	KEYWORD2
+onButton	KEYWORD2
+onDpad	KEYWORD2
+descriptor	KEYWORD2
+reportMap	KEYWORD2
+reportMapLen	KEYWORD2
+dumpReportMap	KEYWORD2
+dumpDescriptorFields	KEYWORD2
+printState	KEYWORD2
+printStateChanges	KEYWORD2
+printCsv	KEYWORD2
+printJson	KEYWORD2
+buttonName	KEYWORD2
+
+#######################################
+# Constants (LITERAL1)
+#######################################
+MOMO_BTN_A	LITERAL1
+MOMO_BTN_B	LITERAL1
+MOMO_BTN_X	LITERAL1
+MOMO_BTN_Y	LITERAL1
+MOMO_BTN_L1	LITERAL1
+MOMO_BTN_R1	LITERAL1
+MOMO_BTN_L2	LITERAL1
+MOMO_BTN_R2	LITERAL1
+MOMO_BTN_SELECT	LITERAL1
+MOMO_BTN_START	LITERAL1
+MOMO_BTN_HOME	LITERAL1
+MOMO_BTN_L3	LITERAL1
+MOMO_BTN_R3	LITERAL1
+MOMO_BTN_M1	LITERAL1
+MOMO_BTN_M2	LITERAL1
+MOMO_BTN_C	LITERAL1
+MOMO_BTN_Z	LITERAL1
+MOMO_BTN_CAPTURE	LITERAL1
+MOMO_DPAD_UP	LITERAL1
+MOMO_DPAD_DOWN	LITERAL1
+MOMO_DPAD_LEFT	LITERAL1
+MOMO_DPAD_RIGHT	LITERAL1
+kProfileMomo	LITERAL1
+kProfileAndroidGamepad	LITERAL1
+kProfileGeneric	LITERAL1
+MASSMORE_MOMOJOY_VERSION	LITERAL1
