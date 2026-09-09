@@ -126,9 +126,11 @@ void listGamepads() {
                   d.name[0] ? d.name : "(no name)");
   }
   Serial.println("=========================================");
+  // Serial output is kept ASCII-only so it renders in any monitor.
+  // ข้อความที่พิมพ์ออก Serial เป็น ASCII ล้วน จะได้ไม่เพี้ยนในมอนิเตอร์ทุกตัว
+  // (แปล: ก็อป address ที่ต้องการไปใส่ใน TARGET_ADDRESS ด้านบน แล้วอัพโหลดใหม่)
   Serial.println(" Copy the address you want into TARGET_ADDRESS");
   Serial.println(" at the top of this sketch, then upload again.");
-  Serial.println(" ก็อป address ที่ต้องการไปใส่ใน TARGET_ADDRESS แล้วอัพใหม่");
   Serial.println("=========================================");
 
 #if AUTO_PICK_STRONGEST

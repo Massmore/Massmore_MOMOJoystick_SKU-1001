@@ -18,7 +18,7 @@
 //  example 4 needs env:esp32. เลือก environment ให้ตรงกับบอร์ดด้วย
 // =============================================================================
 #ifndef MOMO_EXAMPLE
-#define MOMO_EXAMPLE 6
+#define MOMO_EXAMPLE 1
 #endif
 
 #include <Arduino.h>

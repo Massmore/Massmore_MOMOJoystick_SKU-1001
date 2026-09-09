@@ -166,6 +166,16 @@ void onConnected(const char* name, const char* address);
 void onDisconnected();
 void onButtons(uint32_t pressed, uint32_t released);
 
+// Declared with IRAM_ATTR on purpose: the Arduino IDE generates prototypes
+// automatically and would emit them without the attribute, which clashes with
+// the definitions below ("ambiguating new declaration").
+// ต้องประกาศพร้อม IRAM_ATTR เอง ไม่งั้น Arduino IDE จะสร้าง prototype ที่ไม่มี attribute
+// แล้วชนกับนิยามข้างล่าง ขึ้น error "ambiguating new declaration"
+void IRAM_ATTR isrM1();
+void IRAM_ATTR isrM2();
+void IRAM_ATTR isrM3();
+void IRAM_ATTR isrM4();
+
 // ===========================================================================
 //  4. Encoders / อ่านค่า encoder
 // ===========================================================================
