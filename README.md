@@ -1,125 +1,198 @@
 <div align="center">
 
-# Massmore_MomoJoy
+# MOMO Joystick Controller · SKU-1001
 
-**BLE HID gamepad host library for ESP32 / ESP32-S3**
-ไลบรารีสำหรับให้ ESP32 อ่านค่าจอยเกม Bluetooth ได้โดยตรง
+**Wireless BLE joystick for ESP32 / ESP32-S3 robots: no phone, no PC, no dongle.**<br>
+จอยบังคับไร้สาย BLE ต่อกับบอร์ด ESP32 / ESP32-S3 ได้โดยตรง สำหรับงานหุ่นยนต์และการเรียนการสอน
 
-<img src="docs/images/momo-joystick.png" width="420" alt="MOMO Joystick Controller">
+<img src="docs/images/momo-joystick-photo.jpg" width="520" alt="MOMO Joystick Controller">
 
-**MOMO Joystick Controller · SKU-1001** · by [Massmore](https://massmore.shop)
+![Library](https://img.shields.io/badge/library-Massmore__MomoJoy%20v2.1.0-0b3d6b)
+![Arduino](https://img.shields.io/badge/Arduino%20IDE-ESP32%20core%203.x-00979D)
+![PlatformIO](https://img.shields.io/badge/PlatformIO-pioarduino%2055.03.x-F5822A)
+![BLE](https://img.shields.io/badge/BLE-NimBLE--Arduino%202.x-1F5FA8)
+![License](https://img.shields.io/badge/license-MIT-green)
 
-`Arduino IDE (ESP32 core 3.x)` · `PlatformIO (pioarduino 55.03.x)` · `NimBLE-Arduino 2.x` · `MIT`
+**[User Manual (PDF)](docs/MOMOJoystick_UserManual.pdf)** · **[Word / Google Docs](docs/MOMOJoystick_UserManual.docx)** · **[Firmware](firmware/README.md)** · **[Shop](https://www.massmore.shop)**
 
 </div>
 
 ---
 
-> **คู่มือการใช้งานฉบับเต็ม (ภาษาไทย) — [อ่านบนเว็บ](docs/MOMOJoystick_UserManual.md) · [PDF](docs/MOMOJoystick_UserManual.pdf) · [Word](docs/MOMOJoystick_UserManual.docx)**
-> ติดตั้ง Library ทีละขั้น · จับคู่จอย · หุ่นยนต์ 2 ล้อ และ 4 ล้อ · Factory Test · แก้ปัญหา
-> *Full user manual in Thai — step-by-step install, pairing, both robot boards, factory test, troubleshooting.*
+## Contents / สารบัญ
 
-## What it is / คืออะไร
-
-`Massmore_MomoJoy` turns an ESP32 or ESP32-S3 into a **BLE HID host**, so your
-board can read a Bluetooth game controller directly - no phone, no PC, no
-dongle. Sticks, analog triggers, D-pad, 18 buttons and battery level arrive as
-plain numbers you can use to drive motors, LEDs or anything else.
-
-ไลบรารีนี้ทำให้บอร์ด ESP32 / ESP32-S3 **ต่อกับจอยเกมบลูทูธได้โดยตรง** ไม่ต้องผ่านมือถือหรือคอม
-อ่านค่าอนาล็อกสติ๊ก ไกอนาล็อก ปุ่มกด และแบตเตอรี่ ออกมาเป็นตัวเลขพร้อมใช้ควบคุมมอเตอร์หรือ LED ได้ทันที
-
-The HID Report Map is **parsed at runtime**, so nothing about the byte layout is
-hard-coded. That is why it also works with most other BLE HID gamepads, not
-only the MOMO pad.
-ตัวไลบรารี **อ่านและแปล HID Report Map ของจอยตอนรันไทม์** ไม่ได้ fix ตำแหน่ง byte ไว้ จึงใช้กับจอย BLE ยี่ห้ออื่นได้ด้วย
+- [Overview](#overview--ภาพรวม)
+- [Supported boards](#supported-boards--บอร์ดที่รองรับ)
+- [Button map](#button-map--ผังปุ่ม)
+- [Install in 5 minutes](#install--การติดตั้ง)
+- [Pairing](#pairing--การจับคู่)
+- [Quick start](#quick-start--เริ่มเขียนโปรแกรม)
+- [Examples](#examples--โปรแกรมตัวอย่าง)
+- [Robot 2WD · ESP32 Breakout (SKU-1015)](#robot-2wd--esp32-breakout-sku-1015)
+- [Robot 4WD · MOMO ESP32-S3 (SKU-1020)](#robot-4wd--momo-esp32-s3-sku-1020)
+- [Several joysticks in one room](#several-joysticks-in-one-room--จอยหลายตัวในห้องเดียวกัน)
+- [Factory Test](#factory-test--ทดสอบจอยทีละปุ่ม)
+- [API reference](#api-reference--สรุปคำสั่ง)
+- [Troubleshooting](#troubleshooting--แก้ปัญหา)
+- [Resources](#resources--แหล่งข้อมูล)
 
 ---
 
-## Specifications / สเปค
+## Overview / ภาพรวม
 
-| Item | Spec |
+The **`Massmore_MomoJoy`** library turns an ESP32 or ESP32-S3 into a **BLE HID host**. The board finds the joystick, pairs with it and reads every stick, trigger, button and the battery level as plain numbers, ready to drive motors or servos in a few lines.
+
+ไลบรารี **`Massmore_MomoJoy`** ทำให้บอร์ด ESP32 / ESP32-S3 ทำหน้าที่เป็น **BLE HID Host** ค้นหา จับคู่ และอ่านค่าก้าน ไก ปุ่ม และแบตเตอรี่ของจอยออกมาเป็นตัวเลข นำไปควบคุมมอเตอร์หรือเซอร์โวได้ทันที
+
+| Feature | Detail |
 | --- | --- |
-| Controller link | Bluetooth Low Energy, HID over GATT (service `0x1812`) |
-| Controller mode | mode switch position **`D`** = Android BLE HID |
-| Pairing | Just Works, LE Secure Connections, bond stored in NVS |
-| Host MCU | ESP32 (WROOM-32 and family), ESP32-S3 |
-| Analog sticks | 2 x 2 axes, `-512 … 511`, radial dead zone |
+| Link | Bluetooth Low Energy, HID over GATT (service `0x1812`) |
+| Joystick mode | mode switch on **`D` (Android HID)** |
+| Pairing | Just Works + LE Secure Connections, bond kept in NVS: pair once, reconnects by itself |
+| Analog sticks | 2 sticks × 2 axes, `-512 … 511`, adjustable radial dead zone |
 | Analog triggers | L2 / R2, `0 … 1023` |
-| D-pad | 8-way hat switch decoded to 4 direction bits |
-| Buttons | up to 18 mapped bits (A B X Y L1 R1 L2 R2 L3 R3 SELECT START HOME M1 M2 C Z CAPTURE) |
-| Battery | 0 … 100 %, read from the Battery Service (`0x180F`) |
-| Report rate | typically 60 - 125 Hz, measurable via `reportRateHz()` |
-| Connections | 1 controller at a time (central role only, keeps RAM low) |
-| Flash / RAM | approx. 1.0 MB flash, 45 KB RAM for the ReadAll example |
-| Dependency | NimBLE-Arduino 2.x - **bundled, nothing to install** |
+| Buttons / D-pad | up to 18 buttons, 8-way D-pad decoded to up / down / left / right |
+| Battery | `0 … 100 %` from the standard Battery Service (`0x180F`) |
+| Report rate | about 60–125 Hz (`reportRateHz()`) |
+| Several pads in a room | lock a board to one joystick by **MAC address** |
+| Other BLE gamepads | HID Report Map is **parsed at runtime**, nothing hard-coded |
+| Footprint | about 590 KB flash / 37 KB RAM (Factory Test example) |
+| Dependency | NimBLE-Arduino 2.x, **bundled in both toolchains** |
 
-> **Bluetooth Classic is not supported.** ESP32-S3 has BLE only, and this
-> library is BLE-only on every target. A controller must be in its BLE / Android
-> mode.
-> จอยต้องอยู่ในโหมด BLE (สวิตช์ตำแหน่ง `D`) เท่านั้น โหมด Bluetooth Classic ใช้ไม่ได้
+> [!IMPORTANT]
+> BLE only. Bluetooth Classic controllers and 2.4 GHz dongle controllers are not supported, and one board talks to one joystick at a time.
+> รองรับเฉพาะ BLE เท่านั้น บอร์ด 1 ใบเชื่อมต่อกับจอยได้ครั้งละ 1 ตัว
 
 ---
 
-## Repository layout / โครงสร้างไฟล์
+## Supported boards / บอร์ดที่รองรับ
 
-```text
-.
-├── ArduinoIDE/
-│   ├── Massmore_MomoJoy.zip        <- import this in the Arduino IDE
-│   ├── NimBLE-Arduino.zip          <- and this one (the only dependency)
-│   └── libraries/Massmore_MomoJoy/ <- the library source + 10 examples
-├── PlatformIO/
-│   ├── platformio.ini              <- open this folder in VS Code, build, done
-│   ├── src/main.cpp                <- pick an example by changing one number
-│   └── lib/NimBLE-Arduino/         <- bundled, no download needed
-├── firmware/                       <- Factory Test binaries + flash script
-└── docs/images/
-```
+<table>
+<tr>
+<th width="50%">ESP32 Breakout · SKU-1015</th>
+<th width="50%">MOMO ESP32-S3 · SKU-1020</th>
+</tr>
+<tr>
+<td><img src="docs/images/sku1015-esp32-robot-board.jpg" alt="ESP32 Breakout SKU-1015"></td>
+<td><img src="docs/images/sku1020-momo-esp32s3-board.jpg" alt="MOMO ESP32-S3 SKU-1020"></td>
+</tr>
+<tr>
+<td>
 
-**One source of truth:** `PlatformIO/platformio.ini` points `lib_extra_dirs` at
-`../ArduinoIDE/libraries`, so both toolchains compile the exact same files.
-ซอร์สมีชุดเดียว ทั้ง Arduino IDE และ PlatformIO คอมไพล์ไฟล์เดียวกันเป๊ะ
+- ESP32 38PIN module (ESP32-WROOM-32), 4 MB flash
+- DC in **6–12 V**, on-board 5 V / 3 A regulator
+- 2 DC motor outputs through an **external** TB6612FNG module
+- 3 servo outputs, VR knob, switch, I2C, SPI screen
+- Example **`04_Robot2WD_ESP32`**
+
+</td>
+<td>
+
+- ESP32-S3-WROOM-1U-N16R8, 16 MB flash / 8 MB PSRAM
+- VIN **6–16 V** via terminal block or XT30
+- **4 × TB67H451AFNG** motor drivers on board, 4 encoders
+- PCA9685 servo driver (16 ch), buzzer, CH343P USB-serial
+- Example **`05_Robot4WD_ESP32S3`**
+
+</td>
+</tr>
+</table>
+
+<div align="center">
+<img src="docs/images/joystick-mode-d.jpg" width="640" alt="Mode D works with both ESP32 and ESP32-S3">
+<br><sub>Slide the switch on the back to <b>D (Android HID)</b>, the only mode an ESP32 / ESP32-S3 can talk to.<br>เลื่อนสวิตช์ด้านหลังไปที่ตำแหน่ง D ทุกครั้งที่ใช้กับบอร์ด ESP32</sub>
+</div>
+
+---
+
+## Button map / ผังปุ่ม
+
+<table>
+<tr>
+<td><img src="docs/images/joystick-buttons-front.jpg" alt="Front buttons"></td>
+<td><img src="docs/images/joystick-buttons-top.jpg" alt="Top buttons"></td>
+</tr>
+</table>
+
+| Control | Read with | Range / constant |
+| --- | --- | --- |
+| Left stick X / Y | `lx()` `ly()` | `-512 … 511`, **pushing up gives a negative `ly()`** |
+| Right stick X / Y | `rx()` `ry()` | `-512 … 511` |
+| Left / right trigger (LT / RT) | `l2()` `r2()` | `0 … 1023`, plus button bits `MOMO_BTN_L2` / `MOMO_BTN_R2` |
+| Left / right bumper (LB / RB) | `pressed(MOMO_BTN_L1)` / `R1` | button |
+| Press left / right stick down | `pressed(MOMO_BTN_L3)` / `R3` | button |
+| A B X Y | `MOMO_BTN_A` `MOMO_BTN_B` `MOMO_BTN_X` `MOMO_BTN_Y` | button |
+| View / Menu / Home | `MOMO_BTN_SELECT` `MOMO_BTN_START` `MOMO_BTN_HOME` | button |
+| D-pad | `dpadUp()` `dpadDown()` `dpadLeft()` `dpadRight()` | `MOMO_DPAD_*` |
+| Battery | `battery()` | `0 … 100`, `0xFF` = unknown |
+
+Float versions `lxf() … ryf()` return `-1.0 … 1.0`, and `l2f()` `r2f()` return `0.0 … 1.0`.
+ใช้ `-MomoJoy.ly()` เมื่อต้องการให้ดันก้านขึ้นเป็นค่าเดินหน้า
 
 ---
 
 ## Install / การติดตั้ง
 
-### PlatformIO (VS Code) - recommended
+### Arduino IDE 2.x
 
-1. Open the **`PlatformIO/`** folder in VS Code.
-2. Press **Build**. Everything else is already in the project.
-3. **Upload**, then **Monitor** at `115200`.
+1. **File → Preferences → Additional boards manager URLs**
+   `https://espressif.github.io/arduino-esp32/package_esp32_index.json`
+2. **Tools → Board → Boards Manager** → install **esp32 by Espressif Systems 3.x.x** (core 2.x will not compile).
+3. Download this repository (**Code → Download ZIP**) and import **in this order**:
+   **Sketch → Include Library → Add .ZIP Library** → `ArduinoIDE/NimBLE-Arduino.zip`, then `ArduinoIDE/Massmore_MomoJoy.zip`.
+4. Restart the IDE. **File → Examples → Massmore_MomoJoy** now lists 6 examples.
+5. Set **Tools** for your board:
 
-เปิดโฟลเดอร์ `PlatformIO/` ใน VS Code แล้วกด Build ได้เลย ไม่ต้องติดตั้งไลบรารีเพิ่ม
+| Tools menu | MOMO ESP32-S3 (SKU-1020) | ESP32 Breakout (SKU-1015) |
+| --- | --- | --- |
+| Board | `ESP32S3 Dev Module` | `ESP32 Dev Module` |
+| USB CDC On Boot | **`Disabled`** (log goes through CH343P) | n/a |
+| Flash Size | `16MB (128Mb)` | `4MB (32Mb)` |
+| Partition Scheme | `16M Flash (3MB APP/9.9MB FATFS)` | **`Huge APP (3MB No OTA/1MB SPIFFS)`** |
+| PSRAM | `OPI PSRAM` | `Disabled` |
+| Upload Speed | `921600` (drop to `460800` if unstable) | `921600` |
 
-To pick a different example, change one number at the top of `src/main.cpp`:
+> [!TIP]
+> Updating from an older version? Delete the `MomoJoy` and `Massmore_MomoJoy` folders in `Documents/Arduino/libraries/` first, then import again.
+> หากเคยติดตั้งเวอร์ชันเก่า ให้ลบโฟลเดอร์เดิมก่อน แล้วจึงนำเข้าไฟล์ .zip ใหม่
+
+USB driver: the MOMO ESP32-S3 uses a **CH343P** (built into macOS 11+ and Linux, auto-installed on Windows 10/11, or from [wch-ic.com](https://www.wch-ic.com/products/CH343.html)). The ESP32 38PIN module uses CP2102 or CH340 depending on the module.
+
+### PlatformIO (VS Code)
+
+Open the **`PlatformIO/`** folder and build. NimBLE is already in `lib/`, so there is nothing else to install. Choose an example with one number in `src/main.cpp`:
 
 ```cpp
-#define MOMO_EXAMPLE 2   // 1..6, the list is in that file
+#define MOMO_EXAMPLE 1   // 1-6
 ```
 
-### Arduino IDE
+| Environment | Board |
+| --- | --- |
+| `esp32s3` | MOMO ESP32-S3 (SKU-1020) |
+| `esp32` | ESP32 Breakout (SKU-1015) |
+| `factorytest_esp32s3` / `factorytest_esp32` | Factory Test firmware |
 
-1. **Tools → Board → Boards Manager** → install **esp32 by Espressif Systems, version 3.x**.
-2. **Sketch → Include Library → Add .ZIP Library…** → pick `ArduinoIDE/NimBLE-Arduino.zip`.
-3. Same menu again → pick `ArduinoIDE/Massmore_MomoJoy.zip`.
-4. **Tools → Board** → `ESP32S3 Dev Module` (or `ESP32 Dev Module`).
-5. **Tools → USB CDC On Boot → Disabled** (ESP32-S3 only, so the log goes to the USB-serial chip).
-6. **File → Examples → Massmore_MomoJoy → 01_Pairing** → Upload.
-
-ขั้นตอน 2 และ 3 คือการ import ไฟล์ .zip เข้า Arduino IDE โดยตรง ไม่ต้องหาโหลดเพิ่ม
-
-| Board setting | ESP32-S3 (16 MB / 8 MB PSRAM) | ESP32 (4 MB) |
-| --- | --- | --- |
-| Partition Scheme | `16M Flash (3MB APP/9.9MB FATFS)` | `Huge APP (3MB No OTA/1MB SPIFFS)` |
-| PSRAM | `OPI PSRAM` | `Disabled` |
-| USB CDC On Boot | `Disabled` | n/a |
-| Upload Speed | `921600` | `921600` |
+```bash
+cd PlatformIO
+pio run -e esp32s3 -t upload -t monitor
+```
 
 ---
 
-## Quick start / เริ่มใช้งาน
+## Pairing / การจับคู่
+
+1. Upload **`01_Pairing`**, open the Serial Monitor at **115200**.
+2. Slide the joystick switch to **`D`**.
+3. Hold **HOME** for about **3 s** until the LED **blinks fast**.
+4. Press **RST** on the board. It connects, bonds and prints the name, MAC, RSSI and battery.
+
+From then on the board reconnects on its own at every power-up. Hold **SELECT + START for 1.5 s** to erase the pairing.
+
+เลื่อนสวิตช์ไปที่ D → กด HOME ค้างประมาณ 3 วินาทีจนไฟกะพริบถี่ → กด RST ที่บอร์ด ครั้งต่อไปบอร์ดจะเชื่อมต่อให้อัตโนมัติ
+
+---
+
+## Quick start / เริ่มเขียนโปรแกรม
 
 ```cpp
 #include <Massmore_MomoJoy.h>
@@ -127,272 +200,176 @@ using namespace massmore;
 
 void setup() {
   Serial.begin(115200);
-  MomoJoy.begin();                   // scan, pair and bond automatically
+  MomoJoy.begin();                 // scan, pair, reconnect automatically
 }
 
 void loop() {
-  MomoJoy.update();                  // call every loop - never blocks
+  MomoJoy.update();                // call every loop, never blocks
   if (!MomoJoy.isConnected()) return;
 
-  if (MomoJoy.justPressed(MOMO_BTN_A)) Serial.println("A!");
+  if (MomoJoy.justPressed(MOMO_BTN_A)) Serial.println("A");
 
-  int speed = -MomoJoy.ly();         // -512 .. 511, forward is negative
-  int turbo =  MomoJoy.r2();         //    0 .. 1023
+  int speed = -MomoJoy.ly();       // -512..511, push up = forward
+  int brake =  MomoJoy.l2();       //    0..1023
 }
+```
+
+> [!WARNING]
+> On the robot boards, park the motor pins LOW as the very first line of `setup()`. A floating driver input can spin a wheel at boot. Every example already does this with `parkMotorPins()`.
+> บนบอร์ดหุ่นยนต์ ต้องกำหนดขามอเตอร์เป็น LOW เป็นคำสั่งแรกใน `setup()` ทุกตัวอย่างทำไว้ให้แล้ว
+
+---
+
+## Examples / โปรแกรมตัวอย่าง
+
+| # | Example | Board | What it does |
+| --- | --- | --- | --- |
+| 01 | `01_Pairing` | both | pair, show name / MAC / RSSI / battery / report rate, erase bonds |
+| 02 | `02_ReadAllSerial` | both | print every value when it changes; CSV / JSON output; calibration with `SHOW_RAW_REPORTS 1` |
+| 03 | `03_PairByAddress` | both | list every joystick in range, then lock this board to one MAC |
+| 04 | `04_Robot2WD_ESP32` | ESP32 (SKU-1015) | 2-wheel robot: one-stick driving, D-pad, servo, VR speed knob |
+| 05 | `05_Robot4WD_ESP32S3` | ESP32-S3 (SKU-1020) | 4-wheel mecanum robot: encoders, buzzer, cruise, auto-drive 1 m |
+| 06 | `06_FactoryTest` | both | guided 18-step joystick test with a PASS / FAIL report |
+
+---
+
+## Robot 2WD · ESP32 Breakout (SKU-1015)
+
+<img src="docs/images/sku1015-robot-2wd.jpg" align="right" width="360" alt="2WD wiring">
+
+| Function | GPIO |
+| --- | --- |
+| M1 left motor IN1 / IN2 | `27` / `26` |
+| M2 right motor IN1 / IN2 | `16` / `17` |
+| Servo 1 / 2 / 3 | `19` / `32` / `33` |
+| VR speed knob | `34` |
+| Switch | `36` |
+| I2C SDA / SCL | `21` / `22` |
+| SPI screen CLK / MOSI / RES / DC | `18` / `23` / `4` / `2` |
+
+<br clear="right">
+
+| Control | Action |
+| --- | --- |
+| Left stick | drive and turn, speed follows how far you push |
+| D-pad | straight along the arrow at a fixed speed |
+| R2 | extra throttle on top of the stick |
+| Y (hold) | turbo |
+| A | Servo 1 → 0° / 90° / 180° |
+| L1 / R1 (hold) | spin the left / right wheel (bench test) |
+| B | emergency stop |
+| HOME (hold 2 s) | erase the BLE pairing |
+| VR knob | top speed 70–200 of 255, live, no code edit |
+
+> [!NOTE]
+> SKU-1015 has **no motor driver on the board**. Fit a TB6612FNG (or equivalent) module before connecting motors.
+> บอร์ด SKU-1015 ต้องติดตั้งโมดูลขับมอเตอร์ภายนอกก่อนต่อมอเตอร์
+
+---
+
+## Robot 4WD · MOMO ESP32-S3 (SKU-1020)
+
+<table>
+<tr>
+<td width="58%"><img src="docs/images/sku1020-momo-esp32s3-pinout.jpg" alt="MOMO ESP32-S3 pinout"></td>
+<td width="42%"><img src="docs/images/sku1020-robot-4wd-mecanum.jpg" alt="4WD mecanum robot"></td>
+</tr>
+</table>
+
+| Motor | IN1 | IN2 | Encoder A / B | Wheel |
+| --- | --- | --- | --- | --- |
+| M1 | `21` | `38` | `1` / `2` | rear-right |
+| M2 | `39` | `40` | `16` / `17` | front-right |
+| M3 | `41` | `42` | `7` / `8` | front-left |
+| M4 | `47` | `48` | `9` / `10` | rear-left |
+| Buzzer | `45` | | | |
+
+| Control | Action |
+| --- | --- |
+| Left stick | forward, back, sideways and diagonal in one stick |
+| Right stick X | spin on the spot (mixes with the left stick) |
+| D-pad | straight along the arrow at a fixed speed |
+| Y (hold) | turbo |
+| A | cruise control on / off |
+| X | auto-drive 1 m forward using the encoders |
+| B | emergency stop, cancels cruise and auto-drive |
+| R3 (hold) | horn |
+| L1 / L2 / R1 / R2 (hold) | spin front-left / rear-left / front-right / rear-right wheel |
+| SELECT / START | print / reset encoder counts |
+| HOME (hold 2 s) | erase the BLE pairing |
+
+> [!WARNING]
+> Turn the **Power switch** on. With it off the board runs from USB only, the code works, but the motors do not move.
+> ต้องเปิดสวิตช์ Power บนบอร์ด มิฉะนั้นมอเตอร์จะไม่หมุน
+
+Ordinary wheels instead of mecanum: set `#define MECANUM_WHEELS 0`.
+
+**Tuning** (both robot examples, one `#define` each):
+
+| Setting | Default | Effect |
+| --- | --- | --- |
+| `SPEED_NORMAL` | `110` of 255 (SKU-1020) | stick top speed; on SKU-1015 the VR knob sets it |
+| `SPEED_TURBO` | `220` / `255` | speed while Y is held |
+| `SLEW_UP` / `SLEW_DOWN` | `6` / `24` | ramp per 20 ms: about 0.4 s to full speed, 0.1 s to stop |
+| `EXPO_AMOUNT` | `0.60` | softer middle of the stick when higher |
+| `MOTOR_MIN_DUTY` | `40` | raise to 50–60 if the robot hums but does not creep |
+| `ROT_GAIN` / `TURN_GAIN` | `0.60` / `0.65` | rotation / turning sensitivity |
+
+The motors stop the instant the link drops **or** no report arrives for 400 ms.
+
+---
+
+## Several joysticks in one room / จอยหลายตัวในห้องเดียวกัน
+
+By default the board takes the **first** joystick it finds. In a classroom, lock each board to one MAC with example **03**:
+
+```cpp
+// 1) leave empty, upload: the board lists every joystick in range
+#define TARGET_ADDRESS ""
+//    #  rssi   address             name
+//    1   -41   aa:bb:cc:dd:ee:01   <joystick 1>
+//    2   -73   aa:bb:cc:dd:ee:02   <joystick 2>
+
+// 2) paste the one you want, upload again: it connects on its own at power-up
+#define TARGET_ADDRESS "aa:bb:cc:dd:ee:01"
+```
+
+The same in any sketch: `opt.addressFilter = "aa:bb:cc:dd:ee:01";` before `MomoJoy.begin(opt)`. `AUTO_PICK_STRONGEST 1` picks the closest joystick by RSSI.
+
+ห้องเรียนที่มีจอยหลายตัว ให้ล็อกบอร์ดแต่ละใบกับจอยด้วย MAC Address และติดป้ายหมายเลขจอยกับบอร์ดให้ตรงกัน
+
+---
+
+## Factory Test / ทดสอบจอยทีละปุ่ม
+
+`06_FactoryTest` walks the operator through 18 steps (A B X Y, L1 R1, L2 R2 full pull, L3 R3, D-pad × 4, both sticks around the edge, SELECT, START) and ends with a report. Lines starting with `#TEST` `#RESULT` `#VERDICT` are machine-readable for the web monitor. Type `s` + Enter to skip a step, `r` + Enter to re-run, press RST for the next joystick.
+
+A prebuilt image for the ESP32-S3 is in [`firmware/`](firmware/README.md). Flash **`MomoJoy_FactoryTest_esp32s3_merged.bin` at `0x0`**:
+
+```bash
+esptool.py --chip esp32s3 --port <PORT> --baud 921600 \
+           write_flash -z 0x0 MomoJoy_FactoryTest_esp32s3_merged.bin
 ```
 
 ---
 
-## Pairing / การจับคู่
-
-1. Slide the controller mode switch to **`D`**.
-2. Hold **HOME** about 3 seconds until the LED blinks fast (pairing mode).
-3. Power or reset the board. It scans, bonds and reconnects on its own from then on.
-
-เลื่อนสวิตช์ไปตำแหน่ง `D` → กด HOME ค้าง ~3 วินาทีจนไฟกะพริบถี่ → เปิด/รีเซ็ตบอร์ด
-ครั้งต่อไปจะเชื่อมต่ออัตโนมัติเพราะ bond ถูกเก็บไว้ใน NVS แล้ว
-
-Pairing gone wrong? `MomoJoy.forgetBonds()` clears every stored bond on the
-ESP32 side; then clear the pairing on the controller too and repeat the steps.
-
----
-
-## Value ranges / ช่วงค่าที่อ่านได้
-
-| Accessor | Range | Note |
-| --- | --- | --- |
-| `lx() ly() rx() ry()` | `-512 … 511` | 0 = centre, radial dead zone applied |
-| `lxf() lyf() rxf() ryf()` | `-1.0 … 1.0` | same value as float |
-| `l2() r2()` | `0 … 1023` | analog triggers |
-| `l2f() r2f()` | `0.0 … 1.0` | same value as float |
-| `dpad()` | bit mask | `MOMO_DPAD_UP / DOWN / LEFT / RIGHT` |
-| `buttons()` | bit mask | `MOMO_BTN_…` |
-| `battery()` | `0 … 100` | `0xFF` when the controller does not report it |
-
-Ranges match Bluepad32 on purpose, so porting an old sketch only means renaming
-the accessors. ตั้งใจให้ช่วงค่าตรงกับ Bluepad32 ย้ายโค้ดเดิมมาได้เลย
-
----
-
-## API / ฟังก์ชันที่ใช้บ่อย
+## API reference / สรุปคำสั่ง
 
 | Group | Functions |
 | --- | --- |
-| Lifecycle | `begin(options)` `begin("name")` `end()` `update()` `isConnected()` `rescan()` `disconnect()` `forgetBonds()` |
-| Pairing | `scanDevices(ms)` `foundCount()` `foundDevice(i)` `setAddressFilter()` `setNameFilter()` `connectToAddress()` |
-| Buttons | `pressed(m)` `justPressed(m)` `justReleased(m)` `longPressed(m, ms)` `heldMs(m)` `anyButton()` `buttons()` |
-| Axes | `lx() ly() rx() ry() l2() r2()` · float `…f()` · `mapStick(v, max)` |
+| Lifecycle | `begin(opt)` `update()` `isConnected()` `isScanning()` `rescan()` `disconnect()` `forgetBonds()` `end()` |
+| Choose a pad | `scanDevices(ms)` `foundCount()` `foundDevice(i)` `setAddressFilter()` `setNameFilter()` `connectToAddress()` |
+| Buttons | `pressed()` `justPressed()` `justReleased()` `longPressed(m, ms)` `heldMs()` `anyButton()` `buttons()` |
+| Axes | `lx() ly() rx() ry() l2() r2()` · `lxf() … r2f()` · `mapStick(v, max)` |
 | D-pad | `dpad()` `dpadUp()` `dpadDown()` `dpadLeft()` `dpadRight()` `dpadJustChanged()` |
-| Info | `battery()` `rssi()` `peerName()` `peerAddress()` `reportRateHz()` `packets()` `version()` |
+| Link info | `battery()` `rssi()` `peerName()` `peerAddress()` `packets()` `reportRateHz()` `msSinceReport()` `version()` |
 | Tuning | `setDeadzone()` `setTriggerThreshold()` `setProfile()` `setInvertLeftY()` `setInvertRightY()` |
 | Callbacks | `onConnect()` `onDisconnect()` `onButton()` `onDpad()` `onRawReport()` |
 | Debug | `printState()` `printStateChanges()` `printCsv()` `printJson()` `dumpReportMap()` `dumpDescriptorFields()` |
 
-`MomoJoyOptions` fields: `localName` `nameFilter` `addressFilter` `autoReconnect`
-`clearBondsOnBoot` `deadzone` `connectTimeoutMs` `triggerThreshold` `txPowerDbm`
-`profile` `autoStart` `verbose`.
+`MomoJoyOptions`: `localName` `nameFilter` `addressFilter` `autoReconnect` `clearBondsOnBoot` `deadzone` (24) `connectTimeoutMs` (10000) `triggerThreshold` (64) `txPowerDbm` (9) `profile` `autoStart` `verbose`.
 
----
-
-## Examples / ตัวอย่าง
-
-Six examples, each one something you would actually ship.
-หกตัวอย่าง เน้นที่ได้ใช้งานจริง
-
-| # | Example | Board | What it does |
-| --- | --- | --- | --- |
-| 01 | `Pairing` | any | pair the joystick, show name / MAC / RSSI / battery / rate, erase bonds |
-| 02 | `ReadAllSerial` | any | print every value; also the **calibration tool** (`SHOW_RAW_REPORTS 1`) and CSV / JSON output |
-| 03 | `PairByAddress` | any | several joysticks in the room: list them, then lock this board onto one MAC |
-| 04 | `Robot2WD_ESP32` | ESP32 | 2-wheel robot: one-stick driving, D-pad, servos, VR speed knob |
-| 05 | `Robot4WD_ESP32S3` | ESP32-S3 | 4-wheel omnidirectional robot: encoders, buzzer, cruise, auto-drive |
-| 06 | `FactoryTest` | any | guided production self-test — prebuilt `.bin` in [firmware/](firmware/README.md) |
-
-### Driving, in one sentence / การบังคับ แบบสั้น ๆ
-
-**Push the left stick where you want to go.** Forward, backward, sideways or
-diagonal on the 4-wheel robot; forward and turning on the 2-wheel robot. Speed
-follows how far you push, 0-100 %. The **D-pad** drives straight along that
-arrow at a fixed speed. Nothing to configure.
-
-**ดันก้านซ้ายไปทางที่อยากไป** รถ 4 ล้อไปได้ทั้งเดินหน้า ถอยหลัง สไลด์ข้าง และเฉียง
-รถ 2 ล้อเดินหน้า-ถอยหลังและเลี้ยว ความเร็วแปรตามระยะที่ดัน ส่วน **ปุ่มลูกศร** วิ่งตรงตามทิศนั้น
-ด้วยความเร็วคงที่ ไม่ต้องตั้งค่าอะไรเพิ่ม
-
-On the 4-wheel robot the **right stick X** spins the robot on the spot, and it
-mixes with everything above. บนรถ 4 ล้อ ก้านขวาแกน X ใช้หมุนตัว ผสมกับการเคลื่อนที่ได้เลย
-
-### Example 04 — ESP32 robot board pins
-
-| Function | Pins |
-| --- | --- |
-| M1 left motor | `IN1 27` `IN2 26` |
-| M2 right motor | `IN1 16` `IN2 17` |
-| Servo 1 / 2 / 3 | `19` `32` `33` |
-| VR speed knob | `34` (analog in) |
-| Switch | `36` |
-| I2C | `SDA 21` `SCL 22` |
-| Display SPI | `CLK 18` `MOSI 23` `RES 4` `DC 2` |
-
-Extras: `R2` adds throttle on a straight, `Y` hold = turbo, `A` steps Servo 1
-through 0 / 90 / 180 degrees, `L1` `R1` spin one wheel for a bench test, `B`
-stops. The VR knob sets the top speed live (70 - 200 of 255), so you never have
-to edit the code to make it slower for a classroom.
-ปุ่มหมุน VR ใช้ตั้งความเร็วสูงสุดได้ทันที ไม่ต้องแก้โค้ด
-
-### Example 05 — MOMO ESP32-S3 robot pins
-
-Four motor drivers, two logic pins each (IN1 / IN2), driven sign-magnitude:
-PWM on one pin, the other held low, at 20 kHz so the motors stay quiet.
-ขับแบบ sign-magnitude จ่าย PWM ขาเดียว อีกขาเป็น 0 ที่ความถี่ 20 kHz มอเตอร์จึงไม่มีเสียงหวีด
-
-| Motor | IN1 | IN2 | Encoder A / B | Position |
-| --- | --- | --- | --- | --- |
-| M1 | `GPIO21` | `GPIO38` | `1` / `2` | rear-right |
-| M2 | `GPIO39` | `GPIO40` | `16` / `17` | front-right |
-| M3 | `GPIO41` | `GPIO42` | `7` / `8` | front-left |
-| M4 | `GPIO47` | `GPIO48` | `9` / `10` | rear-left |
-
-Buzzer on `GPIO45`. Extras: `R3` hold = horn, `A` cruise control, `X`
-auto-drive 1 m using the encoders, `Y` hold = turbo, `B` emergency stop,
-`L1` `L2` `R1` `R2` spin one wheel each, `SELECT` / `START` print and reset the
-encoder counts, `HOME` held 2 s erases the pairing.
-
-Set `MECANUM_WHEELS` to `0` if the robot has ordinary wheels — the left stick
-then only drives forward and back. ถ้าใช้ล้อธรรมดาให้ตั้ง `MECANUM_WHEELS` เป็น 0
-
-Driving quality: mixing that normalises instead of clipping so full speed plus
-full rotation keeps the right heading, a 50 Hz fixed-rate control loop, and a
-fail-safe that cuts the motors when the link drops **or** the joystick goes
-quiet for 400 ms.
-
-### Making a strong motor controllable / ทำให้มอเตอร์แรง ๆ บังคับง่าย
-
-Geared motors are strong enough that raw PWM launches the robot across the
-room. Both robot examples soften that in three ways, and all three are one
-`#define` each.
-มอเตอร์เกียร์แรงมาก ถ้าจ่าย PWM ตรง ๆ รถจะพุ่ง ทั้งสองตัวอย่างจึงหน่วงไว้ 3 ชั้น แก้ได้ที่ `#define` เดียว
-
-| Setting | Default | What it does |
-| --- | --- | --- |
-| `SPEED_NORMAL` | `110` of 255 | top speed of the stick — `Y` held unlocks `SPEED_TURBO` (220) |
-| `SLEW_UP` / `SLEW_DOWN` | `6` / `24` | PWM change per 20 ms tick: **0.4 s to reach full speed, 0.1 s to stop** |
-| `EXPO_AMOUNT` | `0.60` | how soft the middle of the stick feels — higher = softer |
-| `MOTOR_MIN_DUTY` | `40` | the slowest duty the motor actually creeps at |
-| `ROT_GAIN` / `TURN_GAIN` | `0.60` / `0.65` | rotation is twitchier than driving, so it gets less gain |
-
-The stick is mapped continuously from `MOTOR_MIN_DUTY` up to the top speed, so
-there is no dead band at the bottom and no sudden jump — the robot creeps at
-the first millimetre of travel and reaches full speed only at the stop.
-ก้านถูกแมปต่อเนื่องจาก `MOTOR_MIN_DUTY` ไปจนถึงความเร็วสูงสุด ไม่มีช่วงตายตอนต้นและไม่กระโดด
-
-```text
-stick     5%    10%    25%    50%    75%   100%
-speed   41.4   42.8   47.7   59.2   78.7    110      (SPEED_NORMAL = 110)
-```
-
-On the 4-wheel robot the expo curve is applied to the **length** of the stick
-vector, not to each axis, so a diagonal keeps its exact direction and only the
-speed is softened. บนรถ 4 ล้อ ใส่ expo ที่ความยาวเวกเตอร์ ทิศเฉียงจึงตรงเป๊ะ
-
-Example 04 needs no code edit at all: the **VR knob on GPIO34** sets the top
-speed live, between `SPEED_MIN` (70) and `SPEED_MAX` (200).
-
-> **Motor safety in every example.** A floating driver input can latch a driver
-> on and spin a wheel for the whole session, so **all six examples park the
-> motor pins LOW as the first thing in `setup()`** (`parkMotorPins()`) — the
-> ESP32-S3 set on GPIO 21, 38-42, 47, 48, 45, or the ESP32 set on GPIO 27, 26,
-> 16, 17, 19, 32, 33. Set `MOMO_BOARD` to `0` in an example if you run it on a
-> plain dev board with nothing attached.
-> ทุกตัวอย่างปักขามอเตอร์เป็น LOW เป็นอย่างแรกใน setup() เพื่อไม่ให้ขาลอยแล้วมอเตอร์หมุนค้าง
-
-### Several joysticks at once / มีจอยหลายตัวพร้อมกัน
-
-By default the library connects to the **first** BLE HID gamepad it sees — with
-two pads awake that is a coin toss. Lock a board to one controller by its MAC
-and it connects on its own at power-up, with nobody pressing anything.
-ปกติไลบรารีจะต่อกับจอย "ตัวแรกที่เจอ" ถ้ามีหลายตัวจะสุ่มเอา ให้ล็อกด้วย MAC แทน
-เปิดเครื่องแล้วต่อเองเลย ไม่ต้องกดปุ่ม
-
-Example **03** does it in two uploads:
-
-```cpp
-// 1) leave it empty -> the board lists every pad in range
-#define TARGET_ADDRESS ""
-
-//    #  rssi   address             name
-//    1   -41   03:52:01:09:61:b5   GamepadSpace-Q34U
-//    2   -73   e4:17:d8:11:22:33   (no name)
-
-// 2) paste the one you want -> this board only ever talks to that pad
-#define TARGET_ADDRESS "03:52:01:09:61:b5"
-```
-
-The same thing from any sketch:
-
-```cpp
-MomoJoyOptions opt;
-opt.addressFilter = "03:52:01:09:61:b5";   // exactly this controller
-// opt.nameFilter = "Q34";                 // or match the advertised name
-MomoJoy.begin(opt);
-```
-
-Listing without connecting, and choosing at runtime:
-
-| Call | What it does |
-| --- | --- |
-| `opt.autoStart = false` | `begin()` prepares BLE but does not grab the first pad |
-| `scanDevices(ms)` | blocking scan, returns how many gamepads are in range |
-| `foundDevice(i)` | `.name` `.address` `.rssi` `.appearance` of each one |
-| `setAddressFilter(mac)` / `setNameFilter(s)` | change the filter at runtime (the string is copied) |
-| `connectToAddress(mac)` | filter + rescan in one call |
-
-Set `AUTO_PICK_STRONGEST` to `1` in example 03 and the board takes the closest
-pad by RSSI — no MAC to type, still no button to press.
-ตั้ง `AUTO_PICK_STRONGEST` เป็น 1 บอร์ดจะเลือกจอยที่สัญญาณแรงสุดให้เอง ไม่ต้องใส่ MAC
-
----
-
-### Unknown controller? / เจอจอยที่ปุ่มไม่ตรง
-
-Open example **02**, set `#define SHOW_RAW_REPORTS 1` and upload. It prints the
-HID report map and the raw bytes of every report, so you can see which HID
-button number belongs to which physical button. Put those numbers into a
-`MomoProfile` table and pass it as `opt.profile`.
-
-```cpp
-static const MomoButtonMap kMyMap[] = {
-    {1, MOMO_BTN_A}, {2, MOMO_BTN_B}, {4, MOMO_BTN_X}, {5, MOMO_BTN_Y},
-    // ... the numbers example 02 printed
-};
-static const MomoProfile kMyProfile = {"my pad", kMyMap,
-    (uint8_t)(sizeof(kMyMap) / sizeof(kMyMap[0])), false, false};
-
-MomoJoyOptions opt;
-opt.profile = &kMyProfile;
-MomoJoy.begin(opt);
-```
-
----
-
-## How it works / หลักการทำงาน
-
-```text
-scan  (filter: HID service 0x1812, or appearance = gamepad)
-  └─ connect + bond  (Just Works, LE Secure Connections, stored in NVS)
-       ├─ write Protocol Mode = Report      (0x2A4E <- 1)
-       ├─ read  Report Map                  (0x2A4B) -> parser -> field table
-       ├─ subscribe to every input report   (0x2A4D, type read from 0x2908)
-       └─ notify -> FreeRTOS queue -> decode -> MomoGamepadState
-```
-
-Nothing assumes "byte 3 is the Y axis". Every bit offset comes from the
-controller's own report descriptor, so axes, triggers and D-pad are correct on
-any BLE HID gamepad. Only the **button numbering** differs per brand, and that
-lives in one small table you can override (see example 02 above).
-
-ไม่มีจุดไหนที่เดาว่า "byte ที่ 3 คือแกน Y" ทุก offset มาจาก report descriptor ของจอยเอง
-มีแค่ **หมายเลขปุ่ม** ที่ต่างกันตามยี่ห้อ ซึ่งแก้ได้ในตารางเดียว
+Using a different BLE gamepad whose buttons land on the wrong names? Run `02_ReadAllSerial` with `SHOW_RAW_REPORTS 1`, note the HID button numbers and pass your own `MomoProfile` as `opt.profile` (see manual section 8.4).
 
 ---
 
@@ -400,22 +377,48 @@ lives in one small table you can override (see example 02 above).
 
 | Symptom | Fix |
 | --- | --- |
-| Nothing on the serial monitor (ESP32-S3) | `USB CDC On Boot` must be **Disabled**, monitor at `115200` |
-| Scans forever, never connects | controller not in pairing mode, or the mode switch is not on `D` |
-| Connects then drops immediately | stale bond - `MomoJoy.forgetBonds()`, clear pairing on the pad, retry |
-| `no HID service (0x1812)` | the controller is in a non-BLE mode; switch it to `D` |
-| Buttons land on the wrong names | example 02 with `SHOW_RAW_REPORTS 1`, then build your own `MomoProfile` |
-| Sticks drift at rest | raise the dead zone: `MomoJoy.setDeadzone(48)` |
-| Sketch does not fit (classic ESP32) | partition scheme must be **Huge APP** |
-| Upload fails / times out | lower `upload_speed` to `512000`, then `460800` |
-| `ledcAttach was not declared` | you are on ESP32 core 2.x - this library needs **core 3.x** |
-| `ambiguating new declaration` in the Arduino IDE | rare prototype-generator hiccup: every example already declares its own prototypes, so just re-verify once; if it persists, move the sketch's Thai comments into a separate file |
+| No port in **Tools → Port** | install the USB driver, use a data USB cable (not charge-only) |
+| `'ledcAttach' was not declared` | ESP32 core 2.x installed; switch to **3.x.x** |
+| `Sketch too big` (ESP32) | Partition Scheme → **Huge APP** |
+| `NimBLEDevice.h: No such file` | import `NimBLE-Arduino.zip` too |
+| Serial Monitor empty (ESP32-S3) | **USB CDC On Boot = Disabled**, 115200 baud |
+| `Failed to connect` on upload | hold BOOT, tap RST, release BOOT, upload again |
+| Never finds the joystick | switch on **D**, hold HOME ~3 s until the LED blinks fast |
+| Connects then drops / `encryption failed` | erase bonds (SELECT + START 1.5 s or `forgetBonds()`) and pair again |
+| Motor spins at boot | call `parkMotorPins()` first in `setup()` |
+| Motors do not move (SKU-1020) | turn the board Power switch on |
+| Stick drifts at rest | `MomoJoy.setDeadzone(48)` |
+| Robot drives backwards when pushing up | use `-MomoJoy.ly()` or swap the motor wires |
+
+More cases in chapter 8 of the [manual](docs/MOMOJoystick_UserManual.pdf).
 
 ---
 
+## Resources / แหล่งข้อมูล
+
+| | |
+| --- | --- |
+| User manual (Thai) | [PDF](docs/MOMOJoystick_UserManual.pdf) · [Word / Google Docs](docs/MOMOJoystick_UserManual.docx) · [Markdown](docs/MOMOJoystick_UserManual.md) |
+| MOMO ESP32-S3 (SKU-1020) | [GitHub](https://github.com/Massmore/SKU-1020_MOMO) · [Shop](https://www.massmore.shop/products/743deb7c-556d-41b7-b42a-1e9d6df55bca) |
+| ESP32 Breakout (SKU-1015) | [GitHub](https://github.com/Massmore/Massmore_ESP32Breakout_SKU-1015) · [Shop](https://www.massmore.shop/products/1cbd7c12-166a-4cbb-bbc6-3d7fdce0775c) |
+| NimBLE-Arduino | [h2zero/NimBLE-Arduino](https://github.com/h2zero/NimBLE-Arduino) |
+| ESP32 Arduino core | [espressif/arduino-esp32](https://github.com/espressif/arduino-esp32) |
+| Bluetooth HID over GATT | [HOGP 1.0](https://www.bluetooth.com/specifications/specs/hid-over-gatt-profile-1-0/) |
+
+```text
+.
+├── ArduinoIDE/          Massmore_MomoJoy.zip + NimBLE-Arduino.zip (import both) + library source
+├── PlatformIO/          open in VS Code and build, NimBLE bundled in lib/
+├── firmware/            Factory Test .bin + flash script
+└── docs/                user manual (PDF / DOCX / MD) + images
+```
+
 ## License
 
-MIT - see [LICENSE](LICENSE). NimBLE-Arduino is Apache-2.0 and is bundled
-unmodified under `PlatformIO/lib/NimBLE-Arduino/`.
+MIT, see [LICENSE](LICENSE). NimBLE-Arduino (Apache-2.0) is bundled unmodified.
 
-Made by **Massmore Biz Co., Ltd.** · [massmore.shop](https://massmore.shop)
+<div align="center">
+
+Made by **Massmore Biz Co., Ltd.** · [massmore.shop](https://www.massmore.shop)
+
+</div>
