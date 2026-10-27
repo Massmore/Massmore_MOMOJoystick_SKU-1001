@@ -15,6 +15,10 @@
 
 ---
 
+> **คู่มือการใช้งานฉบับเต็ม (ภาษาไทย) — [อ่านบนเว็บ](docs/MOMOJoystick_UserManual.md) · [PDF](docs/MOMOJoystick_UserManual.pdf) · [Word](docs/MOMOJoystick_UserManual.docx)**
+> ติดตั้ง Library ทีละขั้น · จับคู่จอย · หุ่นยนต์ 2 ล้อ และ 4 ล้อ · Factory Test · แก้ปัญหา
+> *Full user manual in Thai — step-by-step install, pairing, both robot boards, factory test, troubleshooting.*
+
 ## What it is / คืออะไร
 
 `Massmore_MomoJoy` turns an ESP32 or ESP32-S3 into a **BLE HID host**, so your
